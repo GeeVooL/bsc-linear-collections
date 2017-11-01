@@ -12,18 +12,8 @@ template <typename Type>
 class LinkedList
 {
   private:
-    class Node
-    {
-      public:
-        Type data;
-        Node *next;
-        Node *prev;
-
-        Node() : next(nullptr), prev(nullptr) {}
-        Node(const Type &data) : data(data), next(nullptr), prev(nullptr) {}
-    };
-
-    Node *sentinel; //public or private?
+    class Node;
+    Node *sentinel;
     Node *first;
     std::size_t size;
 
@@ -50,18 +40,16 @@ class LinkedList
         size = 0;
     }
 
-    LinkedList(std::initializer_list<Type> l)
+    LinkedList(std::initializer_list<Type> l) : LinkedList()
     {
         for (auto i : l)
             append(i);
     }
 
-    LinkedList(const LinkedList &other)
+    LinkedList(const LinkedList &other) : LinkedList()
     {
-        for (auto i : other)
-        {
+        for (auto i = other.begin(); i != other.end(); i++)
             append(i);
-        }
     }
 
     LinkedList(LinkedList &&other)
@@ -135,12 +123,35 @@ class LinkedList
 
     Type popFirst()
     {
-        throw std::runtime_error("TODO");
+        if (!isEmpty())
+        {
+            Node *ptr = first;
+            sentinel->next = ptr->next;
+            ptr->next->prev = ptr->prev;
+            first = sentinel->next;
+
+            Type data = ptr->data;
+            delete ptr;
+            return data;
+        }
+
+        throw std::logic_error();
     }
 
     Type popLast()
     {
-        throw std::runtime_error("TODO");
+        if (!isEmpty())
+        {
+            Node *ptr = sentinel->prev;
+            sentinel->prev = ptr->prev;
+            ptr->prev->next = ptr->next;
+
+            Type data = ptr->data;
+            delete ptr;
+            return data;
+        }
+
+        throw std::logic_error();
     }
 
     void erase(const const_iterator &possition)
@@ -158,22 +169,22 @@ class LinkedList
 
     iterator begin()
     {
-        throw std::runtime_error("TODO");
+        return iterator(first);
     }
 
     iterator end()
     {
-        throw std::runtime_error("TODO");
+        return iterator(sentinel);
     }
 
     const_iterator cbegin() const
     {
-        throw std::runtime_error("TODO");
+        return const_iterator(first);
     }
 
     const_iterator cend() const
     {
-        throw std::runtime_error("TODO");
+        return const_iterator(sentinel)
     }
 
     const_iterator begin() const
@@ -188,42 +199,73 @@ class LinkedList
 };
 
 template <typename Type>
-class LinkedList<Type>::ConstIterator
+class LinkedList<Type>::Node
 {
   public:
-    // using iterator_category = std::bidirectional_iterator_tag; TODO: What is wrong here?
+    Type data;
+    Node *next;
+    Node *prev;
+
+    Node() : next(nullptr), prev(nullptr) {}
+    Node(const Type &data) : data(data), next(nullptr), prev(nullptr) {}
+};
+
+template <typename Type>
+class LinkedList<Type>::ConstIterator
+{
+  private:
+    LinkedList<Type>::Node *ptr;
+
+  public:
+    using iterator_category = std::bidirectional_iterator_tag;
     using value_type = typename LinkedList::value_type;
     using difference_type = typename LinkedList::difference_type;
     using pointer = typename LinkedList::const_pointer;
     using reference = typename LinkedList::const_reference;
 
-    explicit ConstIterator()
+    explicit ConstIterator(LinkedList<Type>::Node *ptr)
     {
+        this->ptr = ptr;
     }
 
     reference operator*() const
     {
-        throw std::runtime_error("TODO");
+        if (ptr == LinkedList<Type>::sentinel)
+            throw std::out_of_range("This iterator does not point to a valid node");
+        
+        return ptr->data;
     }
 
     ConstIterator &operator++()
     {
-        throw std::runtime_error("TODO");
+        if (ptr == LinkedList<Type>::sentinel)
+            throw std::out_of_range("The next iterator does not exist");
+
+        ptr = ptr->next;
+        return *this;
     }
 
     ConstIterator operator++(int)
     {
-        throw std::runtime_error("TODO");
+        ConstIterator tmp(ptr);
+        ++(*this);
+        return tmp;
     }
 
     ConstIterator &operator--()
     {
-        throw std::runtime_error("TODO");
+        if (ptr == LinkedList<Type>::first)
+            throw std::out_of_range("The previous iterator does not exist");
+        
+        ptr = ptr->prev;
+        return *this;
     }
 
     ConstIterator operator--(int)
     {
-        throw std::runtime_error("TODO");
+        ConstIterator tmp(ptr);
+        --(*this);
+        return tmp;
     }
 
     ConstIterator operator+(difference_type d) const
@@ -240,31 +282,34 @@ class LinkedList<Type>::ConstIterator
 
     bool operator==(const ConstIterator &other) const
     {
-        (void)other;
-        throw std::runtime_error("TODO");
+        return this->ptr == other.ptr;
     }
 
     bool operator!=(const ConstIterator &other) const
     {
-        (void)other;
-        throw std::runtime_error("TODO");
+        return !(*this == other);
     }
 };
 
 template <typename Type>
 class LinkedList<Type>::Iterator : public LinkedList<Type>::ConstIterator
 {
+  private:
+    LinkedList<Type>::Node *ptr;
+
   public:
     using pointer = typename LinkedList::pointer;
     using reference = typename LinkedList::reference;
 
-    explicit Iterator()
+    explicit Iterator(LinkedList<Type>::Node *ptr)
     {
+        this->ptr = ptr;
     }
 
     Iterator(const ConstIterator &other)
         : ConstIterator(other)
     {
+
     }
 
     Iterator &operator++()
