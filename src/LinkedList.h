@@ -52,14 +52,20 @@ class LinkedList
             append(i);
     }
 
-    LinkedList(LinkedList &&other)
+    LinkedList(LinkedList &&other) : sentinel(other.sentinel), first(other.first), size(other.size)
     {
-        (void)other;
-        throw std::runtime_error("TODO");
+        other.sentinel = new Node();
+        other.sentinel->next = other.sentinel;
+        other.sentinel->prev = other.sentinel;
+        other.first = other.sentinel;
+        other.size = 0;
     }
 
     ~LinkedList()
     {
+        // while (!isEmpty())
+        //     popLast();
+        // delete sentinel;
     }
 
     LinkedList &operator=(const LinkedList &other)
@@ -123,35 +129,37 @@ class LinkedList
 
     Type popFirst()
     {
-        if (!isEmpty())
+        if (isEmpty())
         {
-            Node *ptr = first;
-            sentinel->next = ptr->next;
-            ptr->next->prev = ptr->prev;
-            first = sentinel->next;
-
-            Type data = ptr->data;
-            delete ptr;
-            return data;
+            throw std::logic_error("Collection already empty");
         }
 
-        throw std::logic_error();
+        Node *ptr = first;
+        sentinel->next = ptr->next;
+        ptr->next->prev = ptr->prev;
+        first = sentinel->next;
+
+        Type data = ptr->data;
+        delete ptr;
+        size--;
+        return data;
     }
 
     Type popLast()
     {
-        if (!isEmpty())
+        if (isEmpty())
         {
-            Node *ptr = sentinel->prev;
-            sentinel->prev = ptr->prev;
-            ptr->prev->next = ptr->next;
-
-            Type data = ptr->data;
-            delete ptr;
-            return data;
+            throw std::logic_error("Collection already empty");
         }
 
-        throw std::logic_error();
+        Node *ptr = sentinel->prev;
+        sentinel->prev = ptr->prev;
+        ptr->prev->next = ptr->next;
+
+        Type data = ptr->data;
+        delete ptr;
+        size--;
+        return data;
     }
 
     void erase(const const_iterator &possition)
@@ -184,7 +192,7 @@ class LinkedList
 
     const_iterator cend() const
     {
-        return const_iterator(sentinel)
+        return const_iterator(sentinel);
     }
 
     const_iterator begin() const
@@ -294,22 +302,17 @@ class LinkedList<Type>::ConstIterator
 template <typename Type>
 class LinkedList<Type>::Iterator : public LinkedList<Type>::ConstIterator
 {
-  private:
-    LinkedList<Type>::Node *ptr;
-
   public:
     using pointer = typename LinkedList::pointer;
     using reference = typename LinkedList::reference;
 
-    explicit Iterator(LinkedList<Type>::Node *ptr)
+    explicit Iterator(LinkedList<Type>::Node *ptr) : ConstIterator(ptr)
     {
-        this->ptr = ptr;
     }
 
     Iterator(const ConstIterator &other)
         : ConstIterator(other)
     {
-
     }
 
     Iterator &operator++()
