@@ -4,6 +4,7 @@
 #include <cstddef>
 #include <initializer_list>
 #include <stdexcept>
+#include <iostream>
 
 namespace aisdi
 {
@@ -16,6 +17,22 @@ class LinkedList
     Node *sentinel;
     Node *first;
     std::size_t size;
+
+    void clear()
+    {
+        Node *ptr = first;
+        Node *next;
+        while(ptr != sentinel)
+        {
+            next = ptr->next;
+            delete ptr;
+            ptr = next;
+        }
+
+        sentinel->prev = sentinel;
+        sentinel->next = sentinel;
+        first = sentinel;
+    }
 
   public:
     using difference_type = std::ptrdiff_t;
@@ -34,8 +51,6 @@ class LinkedList
     LinkedList()
     {
         sentinel = new Node();
-        sentinel->prev = sentinel;
-        sentinel->next = sentinel;
         first = sentinel;
         size = 0;
     }
@@ -49,35 +64,51 @@ class LinkedList
     LinkedList(const LinkedList &other) : LinkedList()
     {
         for (auto i = other.begin(); i != other.end(); i++)
-            append(i);
+            append(*i);
     }
 
     LinkedList(LinkedList &&other) : sentinel(other.sentinel), first(other.first), size(other.size)
     {
         other.sentinel = new Node();
-        other.sentinel->next = other.sentinel;
-        other.sentinel->prev = other.sentinel;
         other.first = other.sentinel;
         other.size = 0;
     }
 
     ~LinkedList()
     {
-        // while (!isEmpty())
-        //     popLast();
-        // delete sentinel;
+        clear();
+        
+        delete sentinel;
     }
 
     LinkedList &operator=(const LinkedList &other)
     {
-        (void)other;
-        throw std::runtime_error("TODO");
+        if (this != &other)
+        {
+            clear();
+            for (auto i = other.begin(); i != other.end(); i++)
+                append(*i);
+        }
+
+        return *this;
     }
 
-    LinkedList &operator=(LinkedList &&other)
+    LinkedList &operator=(LinkedList &&other) //TODO: FIX
     {
-        (void)other;
-        throw std::runtime_error("TODO");
+        if (this != &other)
+        {
+            clear();
+            
+            sentinel = other.sentinel;
+            first = other.first;
+            size = other.size;
+
+            other.sentinel = new Node();
+            other.first = sentinel;
+            other.size = 0;
+        }
+
+        return *this;
     }
 
     bool isEmpty() const
@@ -106,7 +137,7 @@ class LinkedList
         size++;
     }
 
-    void prepend(const Type &item)
+    void prepend(const Type &item) //TODO: FIX
     {
         Node *ptr = new Node(item);
         if (isEmpty())
@@ -120,7 +151,7 @@ class LinkedList
         size++;
     }
 
-    void insert(const const_iterator &insertPosition, const Type &item)
+    void insert(const const_iterator &insertPosition, const Type &item) //TODO: IMPLEMENT
     {
         (void)insertPosition;
         (void)item;
@@ -145,7 +176,7 @@ class LinkedList
         return data;
     }
 
-    Type popLast()
+    Type popLast() //TODO: FIX
     {
         if (isEmpty())
         {
@@ -177,22 +208,22 @@ class LinkedList
 
     iterator begin()
     {
-        return iterator(first);
+        return iterator(first, sentinel);
     }
 
     iterator end()
     {
-        return iterator(sentinel);
+        return iterator(sentinel, sentinel);
     }
 
     const_iterator cbegin() const
     {
-        return const_iterator(first);
+        return const_iterator(first, sentinel);
     }
 
     const_iterator cend() const
     {
-        return const_iterator(sentinel);
+        return const_iterator(sentinel, sentinel);
     }
 
     const_iterator begin() const
@@ -214,8 +245,9 @@ class LinkedList<Type>::Node
     Node *next;
     Node *prev;
 
-    Node() : next(nullptr), prev(nullptr) {}
+    Node() : next(this), prev(this) {}
     Node(const Type &data) : data(data), next(nullptr), prev(nullptr) {}
+    ~Node() {}
 };
 
 template <typename Type>
@@ -223,6 +255,7 @@ class LinkedList<Type>::ConstIterator
 {
   private:
     LinkedList<Type>::Node *ptr;
+    LinkedList<Type>::Node *sentinel;
 
   public:
     using iterator_category = std::bidirectional_iterator_tag;
@@ -231,14 +264,13 @@ class LinkedList<Type>::ConstIterator
     using pointer = typename LinkedList::const_pointer;
     using reference = typename LinkedList::const_reference;
 
-    explicit ConstIterator(LinkedList<Type>::Node *ptr)
+    explicit ConstIterator(LinkedList<Type>::Node *ptr, LinkedList<Type>::Node *sentinel) : ptr(ptr), sentinel(sentinel) 
     {
-        this->ptr = ptr;
     }
 
     reference operator*() const
     {
-        if (ptr == LinkedList<Type>::sentinel)
+        if (ptr == sentinel)
             throw std::out_of_range("This iterator does not point to a valid node");
         
         return ptr->data;
@@ -246,7 +278,7 @@ class LinkedList<Type>::ConstIterator
 
     ConstIterator &operator++()
     {
-        if (ptr == LinkedList<Type>::sentinel)
+        if (ptr == sentinel)
             throw std::out_of_range("The next iterator does not exist");
 
         ptr = ptr->next;
@@ -255,14 +287,14 @@ class LinkedList<Type>::ConstIterator
 
     ConstIterator operator++(int)
     {
-        ConstIterator tmp(ptr);
+        ConstIterator tmp(ptr, sentinel);
         ++(*this);
         return tmp;
     }
 
     ConstIterator &operator--()
     {
-        if (ptr == LinkedList<Type>::first)
+        if (ptr == sentinel->next)
             throw std::out_of_range("The previous iterator does not exist");
         
         ptr = ptr->prev;
@@ -271,18 +303,18 @@ class LinkedList<Type>::ConstIterator
 
     ConstIterator operator--(int)
     {
-        ConstIterator tmp(ptr);
+        ConstIterator tmp(ptr, sentinel);
         --(*this);
         return tmp;
     }
 
-    ConstIterator operator+(difference_type d) const
+    ConstIterator operator+(difference_type d) const //TODO: IMPLEMENT
     {
         (void)d;
         throw std::runtime_error("TODO");
     }
 
-    ConstIterator operator-(difference_type d) const
+    ConstIterator operator-(difference_type d) const //TODO: IMPLEMENT
     {
         (void)d;
         throw std::runtime_error("TODO");
@@ -306,7 +338,7 @@ class LinkedList<Type>::Iterator : public LinkedList<Type>::ConstIterator
     using pointer = typename LinkedList::pointer;
     using reference = typename LinkedList::reference;
 
-    explicit Iterator(LinkedList<Type>::Node *ptr) : ConstIterator(ptr)
+    explicit Iterator(LinkedList<Type>::Node *ptr, LinkedList<Type>::Node *sentinel) : ConstIterator(ptr, sentinel)
     {
     }
 

@@ -268,136 +268,136 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(GivenCollectionWithOneElement_WhenIterating_ThenEl
   BOOST_CHECK(++it == collection.end());
 }
 
-// BOOST_AUTO_TEST_CASE_TEMPLATE(GivenIterator_WhenPostIncrementing_ThenPreviousPositionIsReturned,
-//                               T,
-//                               TestedTypes)
-// {
-//   LinearCollection<T> collection;
-//   collection.append(T{});
+BOOST_AUTO_TEST_CASE_TEMPLATE(GivenIterator_WhenPostIncrementing_ThenPreviousPositionIsReturned,
+                              T,
+                              TestedTypes)
+{
+  LinearCollection<T> collection;
+  collection.append(T{});
 
-//   auto it = collection.begin();
-//   auto postIncrementedIt = it++;
+  auto it = collection.begin();
+  auto postIncrementedIt = it++;
 
-//   BOOST_CHECK(postIncrementedIt == collection.begin());
-//   BOOST_CHECK(it == collection.end());
-//   BOOST_CHECK(postIncrementedIt == collection.cbegin());
-//   BOOST_CHECK(it == collection.cend());
-// }
+  BOOST_CHECK(postIncrementedIt == collection.begin());
+  BOOST_CHECK(it == collection.end());
+  BOOST_CHECK(postIncrementedIt == collection.cbegin());
+  BOOST_CHECK(it == collection.cend());
+}
 
-// BOOST_AUTO_TEST_CASE_TEMPLATE(GivenIterator_WhenPreIncrementing_ThenNewPositionIsReturned,
-//                               T,
-//                               TestedTypes)
-// {
-//   LinearCollection<T> collection;
-//   collection.append(T{});
+BOOST_AUTO_TEST_CASE_TEMPLATE(GivenIterator_WhenPreIncrementing_ThenNewPositionIsReturned,
+                              T,
+                              TestedTypes)
+{
+  LinearCollection<T> collection;
+  collection.append(T{});
 
-//   auto it = collection.begin();
-//   auto preIncrementedIt = ++it;
+  auto it = collection.begin();
+  auto preIncrementedIt = ++it;
 
-//   BOOST_CHECK(preIncrementedIt == it);
-//   BOOST_CHECK(it == collection.end());
-// }
+  BOOST_CHECK(preIncrementedIt == it);
+  BOOST_CHECK(it == collection.end());
+}
 
-// BOOST_AUTO_TEST_CASE_TEMPLATE(GivenEndIterator_WhenIncrementing_ThenOperationThrows,
-//                               T,
-//                               TestedTypes)
-// {
-//   LinearCollection<T> collection;
+BOOST_AUTO_TEST_CASE_TEMPLATE(GivenEndIterator_WhenIncrementing_ThenOperationThrows,
+                              T,
+                              TestedTypes)
+{
+  LinearCollection<T> collection;
 
-//   BOOST_CHECK_THROW(collection.end()++, std::out_of_range);
-//   BOOST_CHECK_THROW(++(collection.end()), std::out_of_range);
-//   BOOST_CHECK_THROW(collection.cend()++, std::out_of_range);
-//   BOOST_CHECK_THROW(++(collection.cend()), std::out_of_range);
-// }
+  BOOST_CHECK_THROW(collection.end()++, std::out_of_range);
+  BOOST_CHECK_THROW(++(collection.end()), std::out_of_range);
+  BOOST_CHECK_THROW(collection.cend()++, std::out_of_range);
+  BOOST_CHECK_THROW(++(collection.cend()), std::out_of_range);
+}
 
-// BOOST_AUTO_TEST_CASE_TEMPLATE(GivenEndIterator_WhenDecrementing_ThenIteratorPointsToLastItem,
-//                               T,
-//                               TestedTypes)
-// {
-//   LinearCollection<T> collection;
-//   collection.append(1);
-//   collection.append(2);
+BOOST_AUTO_TEST_CASE_TEMPLATE(GivenEndIterator_WhenDecrementing_ThenIteratorPointsToLastItem,
+                              T,
+                              TestedTypes)
+{
+  LinearCollection<T> collection;
+  collection.append(1);
+  collection.append(2);
 
-//   auto it = collection.end();
-//   --it;
+  auto it = collection.end();
+  --it;
 
-//   BOOST_CHECK_EQUAL(*it, 2);
-// }
+  BOOST_CHECK_EQUAL(*it, 2);
+}
 
-// BOOST_AUTO_TEST_CASE_TEMPLATE(GivenIterator_WhenPreDecrementing_ThenNewIteratorValueIsReturned,
-//                               T,
-//                               TestedTypes)
-// {
-//   LinearCollection<T> collection;
-//   collection.append(1);
+BOOST_AUTO_TEST_CASE_TEMPLATE(GivenIterator_WhenPreDecrementing_ThenNewIteratorValueIsReturned,
+                              T,
+                              TestedTypes)
+{
+  LinearCollection<T> collection;
+  collection.append(1);
 
-//   auto it = collection.end();
-//   auto preDecremented = --it;
+  auto it = collection.end();
+  auto preDecremented = --it;
 
-//   BOOST_CHECK(it == preDecremented);
-//   BOOST_CHECK_EQUAL(*it, 1);
-// }
+  BOOST_CHECK(it == preDecremented);
+  BOOST_CHECK_EQUAL(*it, 1);
+}
 
-// BOOST_AUTO_TEST_CASE_TEMPLATE(GivenIterator_WhenPostDecrementing_ThenOldIteratorValueIsReturned,
-//                               T,
-//                               TestedTypes)
-// {
-//   LinearCollection<T> collection;
-//   collection.append(1);
+BOOST_AUTO_TEST_CASE_TEMPLATE(GivenIterator_WhenPostDecrementing_ThenOldIteratorValueIsReturned,
+                              T,
+                              TestedTypes)
+{
+  LinearCollection<T> collection;
+  collection.append(1);
 
-//   auto it = collection.end();
-//   auto postDecremented = it--;
+  auto it = collection.end();
+  auto postDecremented = it--;
 
-//   BOOST_CHECK(postDecremented == collection.end());
-//   BOOST_CHECK_EQUAL(*it, 1);
-// }
+  BOOST_CHECK(postDecremented == collection.end());
+  BOOST_CHECK_EQUAL(*it, 1);
+}
 
-// BOOST_AUTO_TEST_CASE_TEMPLATE(GivenBeginIterator_WhenDecrementing_ThenOperationThrows,
-//                               T,
-//                               TestedTypes)
-// {
-//   LinearCollection<T> collection;
+BOOST_AUTO_TEST_CASE_TEMPLATE(GivenBeginIterator_WhenDecrementing_ThenOperationThrows,
+                              T,
+                              TestedTypes)
+{
+  LinearCollection<T> collection;
 
-//   BOOST_CHECK_THROW(collection.begin()--, std::out_of_range);
-//   BOOST_CHECK_THROW(--(collection.begin()), std::out_of_range);
-//   BOOST_CHECK_THROW(collection.cbegin()--, std::out_of_range);
-//   BOOST_CHECK_THROW(--(collection.cbegin()), std::out_of_range);
-// }
+  BOOST_CHECK_THROW(collection.begin()--, std::out_of_range);
+  BOOST_CHECK_THROW(--(collection.begin()), std::out_of_range);
+  BOOST_CHECK_THROW(collection.cbegin()--, std::out_of_range);
+  BOOST_CHECK_THROW(--(collection.cbegin()), std::out_of_range);
+}
 
-// BOOST_AUTO_TEST_CASE_TEMPLATE(GivenEndIterator_WhenDereferencing_ThenOperationThrows,
-//                               T,
-//                               TestedTypes)
-// {
-//   LinearCollection<T> collection;
+BOOST_AUTO_TEST_CASE_TEMPLATE(GivenEndIterator_WhenDereferencing_ThenOperationThrows,
+                              T,
+                              TestedTypes)
+{
+  LinearCollection<T> collection;
 
-//   BOOST_CHECK_THROW(*collection.end(), std::out_of_range);
-//   BOOST_CHECK_THROW(*collection.cend(), std::out_of_range);
-// }
+  BOOST_CHECK_THROW(*collection.end(), std::out_of_range);
+  BOOST_CHECK_THROW(*collection.cend(), std::out_of_range);
+}
 
-// BOOST_AUTO_TEST_CASE_TEMPLATE(GivenConstIterator_WhenDereferencing_ThenItemIsReturned,
-//                               T,
-//                               TestedTypes)
-// {
-//   LinearCollection<T> collection = { 10, 20, 30 };
+BOOST_AUTO_TEST_CASE_TEMPLATE(GivenConstIterator_WhenDereferencing_ThenItemIsReturned,
+                              T,
+                              TestedTypes)
+{
+  LinearCollection<T> collection = { 10, 20, 30 };
 
-//   auto it = ++collection.cbegin();
+  auto it = ++collection.cbegin();
 
-//   BOOST_CHECK_EQUAL(*it, 20);
-// }
+  BOOST_CHECK_EQUAL(*it, 20);
+}
 
-// BOOST_AUTO_TEST_CASE_TEMPLATE(GivenIterator_WhenDereferencing_ThenItemCanBeChanged,
-//                               T,
-//                               TestedTypes)
-// {
-//   LinearCollection<T> collection = { 10, 20, 30 };
+BOOST_AUTO_TEST_CASE_TEMPLATE(GivenIterator_WhenDereferencing_ThenItemCanBeChanged,
+                              T,
+                              TestedTypes)
+{
+  LinearCollection<T> collection = { 10, 20, 30 };
 
-//   auto it = ++begin(collection);
-//   *it = 500;
+  auto it = ++begin(collection);
+  *it = 500;
 
-//   thenCollectionContainsValues(collection, { 10, 500, 30 });
-// }
+  thenCollectionContainsValues(collection, { 10, 500, 30 });
+}
 
-// BOOST_AUTO_TEST_CASE_TEMPLATE(GivenIterator_WhenAddingInteger_ThenAdvancedIteratorIsReturned,
+// BOOST_AUTO_TEST_CASE_TEMPLATE(GivenIterator_WhenAddingInteger_ThenAdvancedIteratorIsReturned, //TODO
 //                               T,
 //                               TestedTypes)
 // {
@@ -408,7 +408,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(GivenCollectionWithOneElement_WhenIterating_ThenEl
 //   BOOST_CHECK(it + 3 == end(collection));
 // }
 
-// BOOST_AUTO_TEST_CASE_TEMPLATE(GivenIterator_WhenSubstractingInteger_ThenChangedIteratorIsReturned,
+// BOOST_AUTO_TEST_CASE_TEMPLATE(GivenIterator_WhenSubstractingInteger_ThenChangedIteratorIsReturned, //TODO
 //                               T,
 //                               TestedTypes)
 // {
@@ -419,51 +419,51 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(GivenCollectionWithOneElement_WhenIterating_ThenEl
 //   BOOST_CHECK(it - 2 == ++begin(collection));
 // }
 
-// BOOST_AUTO_TEST_CASE_TEMPLATE(GivenEmptyCollection_WhenAddingItem_ThenItemIsInCollection,
-//                               T,
-//                               TestedTypes)
-// {
-//   LinearCollection<T> collection;
+BOOST_AUTO_TEST_CASE_TEMPLATE(GivenEmptyCollection_WhenAddingItem_ThenItemIsInCollection,
+                              T,
+                              TestedTypes)
+{
+  LinearCollection<T> collection;
 
-//   collection.append(42);
+  collection.append(42);
 
-//   thenCollectionContainsValues(collection, { 42 });
-// }
+  thenCollectionContainsValues(collection, { 42 });
+}
 
-// BOOST_AUTO_TEST_CASE_TEMPLATE(GivenCollection_WhenInitializingFromList_ThenAllItemsAreInCollection,
-//                               T,
-//                               TestedTypes)
-// {
-//   const LinearCollection<T> collection = { 1410, 753, 1789 };
+BOOST_AUTO_TEST_CASE_TEMPLATE(GivenCollection_WhenInitializingFromList_ThenAllItemsAreInCollection,
+                              T,
+                              TestedTypes)
+{
+  const LinearCollection<T> collection = { 1410, 753, 1789 };
 
-//   thenCollectionContainsValues(collection, { 1410, 753, 1789 });
-// }
+  thenCollectionContainsValues(collection, { 1410, 753, 1789 });
+}
 
-// BOOST_AUTO_TEST_CASE_TEMPLATE(GivenNonEmptyCollection_WhenCreatingCopy_ThenAllItemsAreCopied,
-//                               T,
-//                               TestedTypes)
-// {
-//   LinearCollection<T> collection = { 1410, 753, 1789 };
-//   LinearCollection<T> other{collection};
+BOOST_AUTO_TEST_CASE_TEMPLATE(GivenNonEmptyCollection_WhenCreatingCopy_ThenAllItemsAreCopied,
+                              T,
+                              TestedTypes)
+{
+  LinearCollection<T> collection = { 1410, 753, 1789 };
+  LinearCollection<T> other{collection};
 
-//   collection.append(1024);
+  collection.append(1024);
 
-//   thenCollectionContainsValues(collection, { 1410, 753, 1789, 1024 });
-//   thenCollectionContainsValues(other, { 1410, 753, 1789 });
-// }
+  thenCollectionContainsValues(collection, { 1410, 753, 1789, 1024 });
+  thenCollectionContainsValues(other, { 1410, 753, 1789 });
+}
 
-// BOOST_AUTO_TEST_CASE_TEMPLATE(GivenEmptyCollection_WhenCreatingCopy_ThenBothCollectionsAreEmpty,
-//                               T,
-//                               TestedTypes)
-// {
-//   LinearCollection<T> collection;
-//   LinearCollection<T> other{collection};
+BOOST_AUTO_TEST_CASE_TEMPLATE(GivenEmptyCollection_WhenCreatingCopy_ThenBothCollectionsAreEmpty,
+                              T,
+                              TestedTypes)
+{
+  LinearCollection<T> collection;
+  LinearCollection<T> other{collection};
 
-//   BOOST_CHECK(other.isEmpty());
-//   BOOST_CHECK(collection.isEmpty());
-// }
+  BOOST_CHECK(other.isEmpty());
+  BOOST_CHECK(collection.isEmpty());
+}
 
-// BOOST_AUTO_TEST_CASE_TEMPLATE(GivenNonEmptyCollection_WhenMovingToOther_ThenAllItemsAreMoved,
+// BOOST_AUTO_TEST_CASE_TEMPLATE(GivenNonEmptyCollection_WhenMovingToOther_ThenAllItemsAreMoved, //FAILED
 //                               T,
 //                               TestedTypes)
 // {
@@ -488,54 +488,54 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(GivenCollectionWithOneElement_WhenIterating_ThenEl
 //   BOOST_CHECK(other.isEmpty());
 // }
 
-// BOOST_AUTO_TEST_CASE_TEMPLATE(GivenNonEmptyCollection_WhenAssigningToOther_ThenAllElementsAreCopied,
-//                               T,
-//                               TestedTypes)
-// {
-//   const LinearCollection<T> collection = { 1, 2, 3, 4 };
-//   LinearCollection<T> other = { 100, 200, 300, 400 };
+BOOST_AUTO_TEST_CASE_TEMPLATE(GivenNonEmptyCollection_WhenAssigningToOther_ThenAllElementsAreCopied,
+                              T,
+                              TestedTypes)
+{
+  const LinearCollection<T> collection = { 1, 2, 3, 4 };
+  LinearCollection<T> other = { 100, 200, 300, 400 };
 
-//   other = collection;
+  other = collection;
 
-//   thenCollectionContainsValues(other, { 1, 2, 3, 4 });
-//   thenCollectionContainsValues(collection, { 1, 2, 3, 4 });
-// }
+  thenCollectionContainsValues(other, { 1, 2, 3, 4 });
+  thenCollectionContainsValues(collection, { 1, 2, 3, 4 });
+}
 
-// BOOST_AUTO_TEST_CASE_TEMPLATE(GivenEmptyCollection_WhenAssigningToOther_ThenOtherCollectionIsEmpty,
-//                               T,
-//                               TestedTypes)
-// {
-//   const LinearCollection<T> collection;
-//   LinearCollection<T> other = { 100, 200, 300, 400 };
+BOOST_AUTO_TEST_CASE_TEMPLATE(GivenEmptyCollection_WhenAssigningToOther_ThenOtherCollectionIsEmpty,
+                              T,
+                              TestedTypes)
+{
+  const LinearCollection<T> collection;
+  LinearCollection<T> other = { 100, 200, 300, 400 };
 
-//   other = collection;
+  other = collection;
 
-//   BOOST_CHECK(other.isEmpty());
-// }
+  BOOST_CHECK(other.isEmpty());
+}
 
-// BOOST_AUTO_TEST_CASE_TEMPLATE(GivenEmptyCollection_WhenSelfAssigning_ThenNothingHappens,
-//                               T,
-//                               TestedTypes)
-// {
-//   LinearCollection<T> collection;
+BOOST_AUTO_TEST_CASE_TEMPLATE(GivenEmptyCollection_WhenSelfAssigning_ThenNothingHappens,
+                              T,
+                              TestedTypes)
+{
+  LinearCollection<T> collection;
 
-//   collection = collection;
+  collection = collection;
 
-//   BOOST_CHECK(collection.isEmpty());
-// }
+  BOOST_CHECK(collection.isEmpty());
+}
 
-// BOOST_AUTO_TEST_CASE_TEMPLATE(GivenNotEmptyCollection_WhenSelfAssigning_ThenNothingHappens,
-//                               T,
-//                               TestedTypes)
-// {
-//   LinearCollection<T> collection = { 100, 200, 300, 400 };
+BOOST_AUTO_TEST_CASE_TEMPLATE(GivenNotEmptyCollection_WhenSelfAssigning_ThenNothingHappens,
+                              T,
+                              TestedTypes)
+{
+  LinearCollection<T> collection = { 100, 200, 300, 400 };
 
-//   collection = collection;
+  collection = collection;
 
-//   thenCollectionContainsValues(collection, { 100, 200, 300, 400 });
-// }
+  thenCollectionContainsValues(collection, { 100, 200, 300, 400 });
+}
 
-// BOOST_AUTO_TEST_CASE_TEMPLATE(GivenNonEmptyCollection_WhenMoveAssigning_ThenAllElementsAreMoved,
+// BOOST_AUTO_TEST_CASE_TEMPLATE(GivenNonEmptyCollection_WhenMoveAssigning_ThenAllElementsAreMoved, //FAILED
 //                               T,
 //                               TestedTypes)
 // {
@@ -552,7 +552,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(GivenCollectionWithOneElement_WhenIterating_ThenEl
 //   thenDestroyedObjectsCountWas<T>(12);
 // }
 
-// BOOST_AUTO_TEST_CASE_TEMPLATE(GivenEmptyCollection_WhenMoveAssigning_ThenNewCollectionIsEmpty,
+// BOOST_AUTO_TEST_CASE_TEMPLATE(GivenEmptyCollection_WhenMoveAssigning_ThenNewCollectionIsEmpty, 
 //                               T,
 //                               TestedTypes)
 // {
@@ -564,29 +564,29 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(GivenCollectionWithOneElement_WhenIterating_ThenEl
 //   BOOST_CHECK(other.isEmpty());
 // }
 
-// BOOST_AUTO_TEST_CASE_TEMPLATE(GivenCollection_WhenAppendingItem_ThenItemIsLast,
-//                               T,
-//                               TestedTypes)
-// {
-//   LinearCollection<T> collection = { 1, 2, 3 };
+BOOST_AUTO_TEST_CASE_TEMPLATE(GivenCollection_WhenAppendingItem_ThenItemIsLast,
+                              T,
+                              TestedTypes)
+{
+  LinearCollection<T> collection = { 1, 2, 3 };
 
-//   collection.append(42);
+  collection.append(42);
 
-//   thenCollectionContainsValues(collection, { 1, 2, 3, 42 });
-// }
+  thenCollectionContainsValues(collection, { 1, 2, 3, 42 });
+}
 
-// BOOST_AUTO_TEST_CASE_TEMPLATE(GivenEmptyCollection_WhenPrependingItem_ThenItemIsAdded,
-//                               T,
-//                               TestedTypes)
-// {
-//   LinearCollection<T> collection;
+BOOST_AUTO_TEST_CASE_TEMPLATE(GivenEmptyCollection_WhenPrependingItem_ThenItemIsAdded,
+                              T,
+                              TestedTypes)
+{
+  LinearCollection<T> collection;
 
-//   collection.prepend(300);
+  collection.prepend(300);
 
-//   thenCollectionContainsValues(collection, { 300 });
-// }
+  thenCollectionContainsValues(collection, { 300 });
+}
 
-// BOOST_AUTO_TEST_CASE_TEMPLATE(GivenNonEmptyCollection_WhenPrependingItem_ThenItemIsFirst,
+// BOOST_AUTO_TEST_CASE_TEMPLATE(GivenNonEmptyCollection_WhenPrependingItem_ThenItemIsFirst, //FAILED
 //                               T,
 //                               TestedTypes)
 // {
@@ -597,45 +597,45 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(GivenCollectionWithOneElement_WhenIterating_ThenEl
 //   thenCollectionContainsValues(collection, { 300, 1, 2 });
 // }
 
-// BOOST_AUTO_TEST_CASE_TEMPLATE(GivenEmptyCollection_WhenGettingSize_ThenZeroIsReturned,
-//                               T,
-//                               TestedTypes)
-// {
-//   const LinearCollection<T> collection;
+BOOST_AUTO_TEST_CASE_TEMPLATE(GivenEmptyCollection_WhenGettingSize_ThenZeroIsReturned,
+                              T,
+                              TestedTypes)
+{
+  const LinearCollection<T> collection;
 
-//   BOOST_CHECK_EQUAL(collection.getSize(), 0);
-// }
+  BOOST_CHECK_EQUAL(collection.getSize(), 0);
+}
 
-// BOOST_AUTO_TEST_CASE_TEMPLATE(GivenNonEmptyCollection_WhenGettingSize_ThenElementCountIsReturned,
-//                               T,
-//                               TestedTypes)
-// {
-//   const LinearCollection<T> collection = { 12, 100, 500 };
+BOOST_AUTO_TEST_CASE_TEMPLATE(GivenNonEmptyCollection_WhenGettingSize_ThenElementCountIsReturned,
+                              T,
+                              TestedTypes)
+{
+  const LinearCollection<T> collection = { 12, 100, 500 };
 
-//   BOOST_CHECK_EQUAL(collection.getSize(), 3);
-// }
+  BOOST_CHECK_EQUAL(collection.getSize(), 3);
+}
 
-// BOOST_AUTO_TEST_CASE_TEMPLATE(GivenCollection_WhenChangingIt_ThenItsSizeAlsoChanges,
-//                               T,
-//                               TestedTypes)
-// {
-//   LinearCollection<T> collection = { 72, 27, 77 };
-//   collection.append(99);
+BOOST_AUTO_TEST_CASE_TEMPLATE(GivenCollection_WhenChangingIt_ThenItsSizeAlsoChanges,
+                              T,
+                              TestedTypes)
+{
+  LinearCollection<T> collection = { 72, 27, 77 };
+  collection.append(99);
 
-//   BOOST_CHECK_EQUAL(collection.getSize(), 4);
-// }
+  BOOST_CHECK_EQUAL(collection.getSize(), 4);
+}
 
-// BOOST_AUTO_TEST_CASE_TEMPLATE(GivenNonEmptyCollection_WhenPrependingItem_ThenSizeIsUpdated,
-//                               T,
-//                               TestedTypes)
-// {
-//   LinearCollection<T> collection = { 72, 27, 77 };
-//   collection.prepend(99);
+BOOST_AUTO_TEST_CASE_TEMPLATE(GivenNonEmptyCollection_WhenPrependingItem_ThenSizeIsUpdated,
+                              T,
+                              TestedTypes)
+{
+  LinearCollection<T> collection = { 72, 27, 77 };
+  collection.prepend(99);
 
-//   BOOST_CHECK_EQUAL(collection.getSize(), 4);
-// }
+  BOOST_CHECK_EQUAL(collection.getSize(), 4);
+}
 
-// BOOST_AUTO_TEST_CASE_TEMPLATE(GivenEmptyCollection_WhenInsertingItem_ThenItemIsAdded,
+// BOOST_AUTO_TEST_CASE_TEMPLATE(GivenEmptyCollection_WhenInsertingItem_ThenItemIsAdded, //TODO
 //                               T,
 //                               TestedTypes)
 // {
@@ -690,36 +690,36 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(GivenCollectionWithOneElement_WhenIterating_ThenEl
 //   BOOST_CHECK_EQUAL(collection.getSize(), 4);
 // }
 
-// BOOST_AUTO_TEST_CASE_TEMPLATE(GivenEmptyCollection_WhenPoppingFirst_ThenOperationThrows,
-//                               T,
-//                               TestedTypes)
-// {
-//   LinearCollection<T> collection;
+BOOST_AUTO_TEST_CASE_TEMPLATE(GivenEmptyCollection_WhenPoppingFirst_ThenOperationThrows,
+                              T,
+                              TestedTypes)
+{
+  LinearCollection<T> collection;
 
-//   BOOST_CHECK_THROW(collection.popFirst(), std::logic_error);
-// }
+  BOOST_CHECK_THROW(collection.popFirst(), std::logic_error);
+}
 
-// BOOST_AUTO_TEST_CASE_TEMPLATE(GivenEmptyCollection_WhenPoppingLast_ThenOperationThrows,
-//                               T,
-//                               TestedTypes)
-// {
-//   LinearCollection<T> collection;
+BOOST_AUTO_TEST_CASE_TEMPLATE(GivenEmptyCollection_WhenPoppingLast_ThenOperationThrows,
+                              T,
+                              TestedTypes)
+{
+  LinearCollection<T> collection;
 
-//   BOOST_CHECK_THROW(collection.popLast(), std::logic_error);
-// }
+  BOOST_CHECK_THROW(collection.popLast(), std::logic_error);
+}
 
-// BOOST_AUTO_TEST_CASE_TEMPLATE(GivenCollectionWithSingleItem_WhenPoppingFirst_ThenCollectionIsEmpty,
-//                               T,
-//                               TestedTypes)
-// {
-//   LinearCollection<T> collection = { 420 };
+BOOST_AUTO_TEST_CASE_TEMPLATE(GivenCollectionWithSingleItem_WhenPoppingFirst_ThenCollectionIsEmpty,
+                              T,
+                              TestedTypes)
+{
+  LinearCollection<T> collection = { 420 };
 
-//   collection.popFirst();
+  collection.popFirst();
 
-//   BOOST_CHECK(collection.isEmpty());
-// }
+  BOOST_CHECK(collection.isEmpty());
+}
 
-// BOOST_AUTO_TEST_CASE_TEMPLATE(GivenCollectionWithSingleItem_WhenPoppingLast_ThenCollectionIsEmpty,
+// BOOST_AUTO_TEST_CASE_TEMPLATE(GivenCollectionWithSingleItem_WhenPoppingLast_ThenCollectionIsEmpty, //FAILED
 //                               T,
 //                               TestedTypes)
 // {
@@ -730,16 +730,16 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(GivenCollectionWithOneElement_WhenIterating_ThenEl
 //   BOOST_CHECK(collection.isEmpty());
 // }
 
-// BOOST_AUTO_TEST_CASE_TEMPLATE(GivenNonEmptyCollection_WhenPoppingFirst_ThenCollectionSizeIsReduced,
-//                               T,
-//                               TestedTypes)
-// {
-//   LinearCollection<T> collection = { 14, 10 };
+BOOST_AUTO_TEST_CASE_TEMPLATE(GivenNonEmptyCollection_WhenPoppingFirst_ThenCollectionSizeIsReduced,
+                              T,
+                              TestedTypes)
+{
+  LinearCollection<T> collection = { 14, 10 };
 
-//   collection.popFirst();
+  collection.popFirst();
 
-//   BOOST_CHECK_EQUAL(collection.getSize(), 1);
-// }
+  BOOST_CHECK_EQUAL(collection.getSize(), 1);
+}
 
 // BOOST_AUTO_TEST_CASE_TEMPLATE(GivenNonEmptyCollection_WhenPoppingLast_ThenCollectionSizeIsReduced,
 //                               T,
@@ -752,16 +752,16 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(GivenCollectionWithOneElement_WhenIterating_ThenEl
 //   BOOST_CHECK_EQUAL(collection.getSize(), 1);
 // }
 
-// BOOST_AUTO_TEST_CASE_TEMPLATE(GivenNonEmptyCollection_WhenPoppingFirst_ThenItemIsRemoved,
-//                               T,
-//                               TestedTypes)
-// {
-//   LinearCollection<T> collection = { 300, 8, 480 };
+BOOST_AUTO_TEST_CASE_TEMPLATE(GivenNonEmptyCollection_WhenPoppingFirst_ThenItemIsRemoved,
+                              T,
+                              TestedTypes)
+{
+  LinearCollection<T> collection = { 300, 8, 480 };
 
-//   collection.popFirst();
+  collection.popFirst();
 
-//   thenCollectionContainsValues(collection, { 8, 480 });
-// }
+  thenCollectionContainsValues(collection, { 8, 480 });
+}
 
 // BOOST_AUTO_TEST_CASE_TEMPLATE(GivenNonEmptyCollection_WhenPoppingLast_ThenItemIsRemoved,
 //                               T,
@@ -774,14 +774,14 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(GivenCollectionWithOneElement_WhenIterating_ThenEl
 //   thenCollectionContainsValues(collection, { 300, 8 });
 // }
 
-// BOOST_AUTO_TEST_CASE_TEMPLATE(GivenNonEmptyCollection_WhenPoppingFirst_ThenItemsIsReturned,
-//                               T,
-//                               TestedTypes)
-// {
-//   LinearCollection<T> collection = { 101, 202, 303 };
+BOOST_AUTO_TEST_CASE_TEMPLATE(GivenNonEmptyCollection_WhenPoppingFirst_ThenItemsIsReturned,
+                              T,
+                              TestedTypes)
+{
+  LinearCollection<T> collection = { 101, 202, 303 };
 
-//   BOOST_CHECK_EQUAL(collection.popFirst(), 101);
-// }
+  BOOST_CHECK_EQUAL(collection.popFirst(), 101);
+}
 
 // BOOST_AUTO_TEST_CASE_TEMPLATE(GivenNonEmptyCollection_WhenPoppingLast_ThenItemsIsReturned,
 //                               T,
