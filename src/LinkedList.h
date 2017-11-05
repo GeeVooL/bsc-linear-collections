@@ -57,7 +57,7 @@ class LinkedList
 
     LinkedList(std::initializer_list<Type> l) : LinkedList()
     {
-        for (auto i : l)
+        for (const Type &i : l)
             append(i);
     }
 
@@ -67,18 +67,19 @@ class LinkedList
             append(*i);
     }
 
-    LinkedList(LinkedList &&other) : sentinel(other.sentinel), first(other.first), size(other.size)
+    LinkedList(LinkedList &&other) : sentinel(nullptr), first(nullptr), size(0)
     {
-        other.sentinel = new Node();
-        other.first = other.sentinel;
-        other.size = 0;
+        *this = std::move(other);
     }
 
     ~LinkedList()
     {
-        clear();
-        
-        delete sentinel;
+        if (sentinel)
+        {
+            clear();
+            delete sentinel;
+        }
+
     }
 
     LinkedList &operator=(const LinkedList &other)
@@ -93,18 +94,19 @@ class LinkedList
         return *this;
     }
 
-    LinkedList &operator=(LinkedList &&other) //TODO: FIX
+    LinkedList &operator=(LinkedList &&other)
     {
         if (this != &other)
         {
-            clear();
+            if (sentinel)
+                clear();
             
             sentinel = other.sentinel;
             first = other.first;
             size = other.size;
 
-            other.sentinel = new Node();
-            other.first = sentinel;
+            other.sentinel = nullptr;
+            other.first = nullptr;
             other.size = 0;
         }
 
@@ -126,9 +128,7 @@ class LinkedList
         Node *ptr = new Node(item);
         
         if (isEmpty())
-        {
             first = ptr;
-        }
 
         sentinel->prev->next = ptr;
         ptr->next = sentinel;
@@ -137,13 +137,10 @@ class LinkedList
         size++;
     }
 
-    void prepend(const Type &item) //TODO: FIX
+    void prepend(const Type &item)
     {
         Node *ptr = new Node(item);
-        if (isEmpty())
-        {
-            first = ptr;
-        }
+        first = ptr;
         sentinel->next->prev = ptr;
         ptr->next = sentinel->next;
         ptr->prev = sentinel;
@@ -151,59 +148,109 @@ class LinkedList
         size++;
     }
 
-    void insert(const const_iterator &insertPosition, const Type &item) //TODO: IMPLEMENT
+    void insert(const const_iterator &insertPosition, const Type &item)
     {
-        (void)insertPosition;
-        (void)item;
-        throw std::runtime_error("TODO");
+        if (insertPosition == cbegin())
+        {
+            prepend(item);
+            return;
+        }
+
+        if (insertPosition == cend())
+        {
+            append(item);
+            return;
+        }
+
+        Node *prev, *org;
+        org = insertPosition.ptr;
+        prev = org->prev;
+
+        Node *ptr = new Node(item);
+        prev->next = ptr;
+        ptr->next = org;
+        org->prev = ptr;
+        ptr->prev = prev;
+        size++;
     }
 
     Type popFirst()
     {
         if (isEmpty())
-        {
             throw std::logic_error("Collection already empty");
-        }
 
         Node *ptr = first;
         sentinel->next = ptr->next;
         ptr->next->prev = ptr->prev;
         first = sentinel->next;
 
-        Type data = ptr->data;
+        Type data = *(ptr->data);
         delete ptr;
         size--;
         return data;
     }
 
-    Type popLast() //TODO: FIX
+    Type popLast() 
     {
         if (isEmpty())
-        {
             throw std::logic_error("Collection already empty");
-        }
 
         Node *ptr = sentinel->prev;
         sentinel->prev = ptr->prev;
         ptr->prev->next = ptr->next;
+        if (ptr == first)
+            first = sentinel;
 
-        Type data = ptr->data;
+        Type data = *(ptr->data);
         delete ptr;
         size--;
         return data;
     }
 
-    void erase(const const_iterator &possition)
+    void erase(const const_iterator &position)
     {
-        (void)possition;
-        throw std::runtime_error("TODO");
+        if (isEmpty() || position == cend())
+            throw std::out_of_range("Position out of range");
+        
+        if (position == cbegin())
+        {
+            popFirst();
+            return;
+        }
+
+        if (position == --cend())
+        {
+            popLast();
+            return;
+        }
+
+        Node* org = position.ptr;
+        org->prev->next = org->next;
+        org->next->prev = org->prev;
+        delete org;
+        size--;
     }
 
     void erase(const const_iterator &firstIncluded, const const_iterator &lastExcluded)
     {
-        (void)firstIncluded;
-        (void)lastExcluded;
-        throw std::runtime_error("TODO");
+        Node *ptr = firstIncluded.ptr;
+        Node *beg = ptr->prev;
+        Node *last = lastExcluded.ptr;
+        Node *next;
+
+        if(firstIncluded == cbegin())
+            first = last;
+
+        while(ptr != last)
+        {
+            next = ptr->next;
+            delete ptr;
+            size--;
+            ptr = next;
+        }
+
+        beg->next = last;
+        last->prev = beg;
     }
 
     iterator begin()
@@ -241,28 +288,37 @@ template <typename Type>
 class LinkedList<Type>::Node
 {
   public:
-    Type data;
+
+    char buffer[sizeof(Type)];
+    Type *data;
     Node *next;
     Node *prev;
 
     Node() : next(this), prev(this) {}
-    Node(const Type &data) : data(data), next(nullptr), prev(nullptr) {}
-    ~Node() {}
+    
+    Node(const Type &item) : Node()
+    {
+        data = new(buffer) Type(item);
+    }
+    
+    ~Node()
+    {
+        data->~Type();
+    }
 };
 
 template <typename Type>
 class LinkedList<Type>::ConstIterator
 {
-  private:
-    LinkedList<Type>::Node *ptr;
-    LinkedList<Type>::Node *sentinel;
-
   public:
     using iterator_category = std::bidirectional_iterator_tag;
     using value_type = typename LinkedList::value_type;
     using difference_type = typename LinkedList::difference_type;
     using pointer = typename LinkedList::const_pointer;
     using reference = typename LinkedList::const_reference;
+
+    LinkedList<Type>::Node *ptr;
+    LinkedList<Type>::Node *sentinel;
 
     explicit ConstIterator(LinkedList<Type>::Node *ptr, LinkedList<Type>::Node *sentinel) : ptr(ptr), sentinel(sentinel) 
     {
@@ -273,7 +329,7 @@ class LinkedList<Type>::ConstIterator
         if (ptr == sentinel)
             throw std::out_of_range("This iterator does not point to a valid node");
         
-        return ptr->data;
+        return *(ptr->data);
     }
 
     ConstIterator &operator++()
@@ -308,16 +364,20 @@ class LinkedList<Type>::ConstIterator
         return tmp;
     }
 
-    ConstIterator operator+(difference_type d) const //TODO: IMPLEMENT
+    ConstIterator operator+(difference_type d) const
     {
-        (void)d;
-        throw std::runtime_error("TODO");
+        ConstIterator tmp(ptr, sentinel);
+        for (auto i = 0; i < d; i++)
+            ++tmp;
+        return tmp;
     }
 
-    ConstIterator operator-(difference_type d) const //TODO: IMPLEMENT
+    ConstIterator operator-(difference_type d) const
     {
-        (void)d;
-        throw std::runtime_error("TODO");
+        ConstIterator tmp(ptr, sentinel);
+        for (auto i = 0; i < d; i++)
+            --tmp;
+        return tmp;
     }
 
     bool operator==(const ConstIterator &other) const
