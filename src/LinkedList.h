@@ -299,7 +299,7 @@ class LinkedList<Type>::Node
     Node *next;
     Node *prev;
 
-    Node() : next(this), prev(this), isSentinel(true) {}
+    Node() : isSentinel(true), next(this), prev(this) {}
     
     Node(const Type &item) : Node()
     {
