@@ -336,8 +336,8 @@ class LinkedList<Type>::ConstIterator
     unsigned &srcVersion;
     unsigned version;
 
-    explicit ConstIterator(LinkedList<Type>::Node *ptr, LinkedList<Type>::Node *sentinel, unsigned &srcVersion, unsigned version) : 
-        ptr(ptr), sentinel(sentinel), srcVersion(srcVersion), version(srcVersion)
+    explicit ConstIterator(LinkedList<Type>::Node *ptr, LinkedList<Type>::Node *sentinel, unsigned &srcVersion) : 
+        ptr(ptr), sentinel(sentinel), srcVersion(version), version(version)
     {
     }
 
@@ -431,7 +431,7 @@ class LinkedList<Type>::Iterator : public LinkedList<Type>::ConstIterator
     using pointer = typename LinkedList::pointer;
     using reference = typename LinkedList::reference;
 
-    explicit Iterator(LinkedList<Type>::Node *ptr, LinkedList<Type>::Node *sentinel, unsigned &srcVersion, unsigned version) : 
+    explicit Iterator(LinkedList<Type>::Node *ptr, LinkedList<Type>::Node *sentinel, unsigned &version) : 
         ConstIterator(ptr, sentinel, version, version)
     {
     }
