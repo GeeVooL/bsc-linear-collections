@@ -301,23 +301,26 @@ class LinkedList
 template <typename Type>
 class LinkedList<Type>::Node
 {
+  private:
+    bool isSentinel;
   public:
-
     char buffer[sizeof(Type)];
     Type *data;
     Node *next;
     Node *prev;
 
-    Node() : next(this), prev(this) {}
+    Node() : next(this), prev(this), isSentinel(true) {}
     
     Node(const Type &item) : Node()
     {
         data = new(buffer) Type(item);
+        isSentinel = false;
     }
     
     ~Node()
-    {
-        data->~Type();
+    {   
+        if (!isSentinel)
+            data->~Type();
     }
 };
 
