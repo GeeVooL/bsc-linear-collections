@@ -20,6 +20,7 @@ class Vector
     Type *bufBegin;
     Type *next;
     Type *bufEnd;
+    unsigned version;
 
     void increaseSize(size_t requiredSize)
     {
@@ -50,6 +51,7 @@ class Vector
         
         delete [] buffer;
         buffer = newBuf;
+        version++;
     }
 
     void clear()
@@ -86,7 +88,7 @@ class Vector
 
     Vector() : Vector(INIT_BUFFER_SIZE) {}
 
-    Vector(size_t capacity) : size(0), bufCapacity(capacity)
+    Vector(size_t capacity) : size(0), bufCapacity(capacity), version(0)
     {
         buffer = new char[sizeof(Type) * (bufCapacity + 1)];
         bufBegin = reinterpret_cast<Type *>(buffer);
@@ -128,7 +130,8 @@ class Vector
             for (auto i = other.begin(); i != other.end(); i++)
                 append(*i);
         }
-
+        
+        version++;
         return *this;
     }
 
@@ -148,6 +151,7 @@ class Vector
             bufBegin = other.bufBegin;
             next = other.next;
             bufEnd = other.bufEnd;
+            ++version;
 
             other.size = 0;
             other.bufCapacity = 0;
@@ -155,6 +159,7 @@ class Vector
             other.bufBegin = nullptr;
             other.next = nullptr;
             other.bufEnd = nullptr;
+            version = 0;
         }
 
         return *this;
@@ -178,6 +183,7 @@ class Vector
         new(next) Type(item);
         ++next;
         ++size;
+        ++version;
     }
 
     void prepend(const Type &item)
@@ -208,6 +214,7 @@ class Vector
         new(bufBegin) Type(item);
         ++next;
         ++size;
+        ++version;
     }
 
     void insert(const const_iterator &insertPosition, const Type &item)
@@ -243,6 +250,7 @@ class Vector
         new(insertPosition.ptr) Type(item);
         ++next;
         ++size;
+        ++version;
 
     }    
 
@@ -264,6 +272,7 @@ class Vector
         }
         --next;
         --size;
+        ++version;
         return ret;
     }
 
@@ -276,6 +285,7 @@ class Vector
         (next - 1)->~Type();
         --next;
         --size;
+        ++version;
         return tmp;
     }
 
@@ -294,6 +304,7 @@ class Vector
             ++tmp;
             ++tmpNext;
         }
+        ++version;
         --next;
         --size;
     }
@@ -318,28 +329,30 @@ class Vector
             ++tmp;
             ++tmpNext;
         }
+        
         next -= rangeSize;
         size -= rangeSize;
+        ++version;
     }
 
     iterator begin() 
     {
-        return iterator(bufBegin, bufBegin, next);
+        return iterator(bufBegin, bufBegin, next, version);
     }
 
     iterator end() 
     {
-        return iterator(next, bufBegin, next);
+        return iterator(next, bufBegin, next, version);
     }
 
     const_iterator cbegin() const
     {
-        return const_iterator(bufBegin, bufBegin, next);
+        return const_iterator(bufBegin, bufBegin, next, version);
     }
 
     const_iterator cend() const
     {
-        return const_iterator(next, bufBegin, next);
+        return const_iterator(next, bufBegin, next, version);
     }
 
     const_iterator begin() const { return cbegin(); }
@@ -360,13 +373,18 @@ class Vector<Type>::ConstIterator
     Type* ptr;
     Type* begin;
     Type* next;
+    unsigned& srcVersion;
+    unsinged version;
 
-    explicit ConstIterator(Type* ptr, Type* begin, Type* next) : ptr(ptr), begin(begin), next(next)
+    explicit ConstIterator(Type* ptr, Type* begin, Type* next, unsigned& version) : 
+        ptr(ptr), begin(begin), next(next), srcVersion(version), version(version)
     {
     }
 
     reference operator*() const 
     {
+        if (srcVersion != version)
+            throw std::logic_error("Iterator invalidated");
         if (ptr == next)
             throw std::out_of_range("This iterator does not point to a valid item");
     
@@ -375,6 +393,8 @@ class Vector<Type>::ConstIterator
 
     ConstIterator &operator++()
     {
+        if (srcVersion != version)
+            throw std::logic_error("Iterator invalidated");
         if (ptr == next)
             throw std::out_of_range("The next iterator does not exist");
 
@@ -384,13 +404,15 @@ class Vector<Type>::ConstIterator
 
     ConstIterator operator++(int)
     {
-        ConstIterator tmp(ptr, begin, next);
+        ConstIterator tmp(ptr, begin, next, srcVersion);
         ++(*this);
         return tmp;
     }
 
     ConstIterator &operator--()
     {
+        if (srcVersion != version)
+            throw std::logic_error("Iterator invalidated");
         if (ptr == begin)
             throw std::out_of_range("The previous iterator does not exist");
 
@@ -400,33 +422,43 @@ class Vector<Type>::ConstIterator
 
     ConstIterator operator--(int)
     {
-        ConstIterator tmp(ptr, begin, next);
+        ConstIterator tmp(ptr, begin, next, srcVersion);
         --(*this);
         return tmp;
     }
 
     ConstIterator operator+(difference_type d) const
     {
+        if (srcVersion != version)
+            throw std::logic_error("Iterator invalidated");
+    
         difference_type distToNext = next - ptr;
         if (d > distToNext)
             throw std::out_of_range("Given iterator does not exist");
 
-        ConstIterator tmp(ptr + d, begin, next);
+        ConstIterator tmp(ptr + d, begin, next, srcVersion);
         return tmp;
     }
 
     ConstIterator operator-(difference_type d) const
     {
+        if (srcVersion != version)
+            throw std::logic_error("Iterator invalidated");
+    
         difference_type distToBeg = ptr - begin;
         if (d > distToBeg)
             throw std::out_of_range("Given iterator does not exist");
 
-        ConstIterator tmp(ptr - d, begin, next);
+        ConstIterator tmp(ptr - d, begin, next, srcVersion);
         return tmp;
     }
 
     bool operator==(const ConstIterator &other) const
     {
+        if (srcVersion != version)
+            throw std::logic_error("Iterator invalidated");
+        if (other.srcVersion != other.version)
+            throw std::logic_error("Iterator invalidated");
         return this->ptr == other.ptr;
     }
 
@@ -443,7 +475,7 @@ class Vector<Type>::Iterator : public Vector<Type>::ConstIterator
     using pointer = typename Vector::pointer;
     using reference = typename Vector::reference;
 
-    explicit Iterator(Type* ptr, Type* begin, Type* next) : ConstIterator(ptr, begin, next) {}
+    explicit Iterator(Type* ptr, Type* begin, Type* next, unsigned& version) : ConstIterator(ptr, begin, next, version) {}
 
     Iterator(const ConstIterator &other) : ConstIterator(other) {}
 
