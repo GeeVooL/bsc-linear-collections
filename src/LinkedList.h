@@ -17,6 +17,7 @@ class LinkedList
     Node *sentinel;
     Node *first;
     std::size_t size;
+    unsigned version;
 
     void clear()
     {
@@ -53,6 +54,7 @@ class LinkedList
         sentinel = new Node();
         first = sentinel;
         size = 0;
+        version = 0;
     }
 
     LinkedList(std::initializer_list<Type> l) : LinkedList()
@@ -79,7 +81,6 @@ class LinkedList
             clear();
             delete sentinel;
         }
-
     }
 
     LinkedList &operator=(const LinkedList &other)
@@ -89,6 +90,7 @@ class LinkedList
             clear();
             for (auto i = other.begin(); i != other.end(); i++)
                 append(*i);
+            version++;
         }
 
         return *this;
@@ -104,10 +106,12 @@ class LinkedList
             sentinel = other.sentinel;
             first = other.first;
             size = other.size;
+            version++;
 
             other.sentinel = nullptr;
             other.first = nullptr;
             other.size = 0;
+            version = 0;
         }
 
         return *this;
@@ -135,6 +139,7 @@ class LinkedList
         ptr->prev = sentinel->prev;
         sentinel->prev = ptr;
         size++;
+        version++;
     }
 
     void prepend(const Type &item)
@@ -146,6 +151,7 @@ class LinkedList
         ptr->prev = sentinel;
         sentinel->next = ptr;
         size++;
+        version++;
     }
 
     void insert(const const_iterator &insertPosition, const Type &item)
@@ -172,6 +178,7 @@ class LinkedList
         org->prev = ptr;
         ptr->prev = prev;
         size++;
+        version++;
     }
 
     Type popFirst()
@@ -187,6 +194,7 @@ class LinkedList
         Type data = *(ptr->data);
         delete ptr;
         size--;
+        version++;
         return data;
     }
 
@@ -204,6 +212,7 @@ class LinkedList
         Type data = *(ptr->data);
         delete ptr;
         size--;
+        version++;
         return data;
     }
 
@@ -229,6 +238,7 @@ class LinkedList
         org->next->prev = org->prev;
         delete org;
         size--;
+        version++;
     }
 
     void erase(const const_iterator &firstIncluded, const const_iterator &lastExcluded)
@@ -254,26 +264,27 @@ class LinkedList
 
         beg->next = last;
         last->prev = beg;
+        version++;
     }
 
     iterator begin()
     {
-        return iterator(first, sentinel);
+        return iterator(first, sentinel, version);
     }
 
     iterator end()
     {
-        return iterator(sentinel, sentinel);
+        return iterator(sentinel, sentinel, version);
     }
 
     const_iterator cbegin() const
     {
-        return const_iterator(first, sentinel);
+        return const_iterator(first, sentinel, version);
     }
 
     const_iterator cend() const
     {
-        return const_iterator(sentinel, sentinel);
+        return const_iterator(sentinel, sentinel, version);
     }
 
     const_iterator begin() const
@@ -322,13 +333,18 @@ class LinkedList<Type>::ConstIterator
 
     LinkedList<Type>::Node *ptr;
     LinkedList<Type>::Node *sentinel;
+    unsigned &srcVersion;
+    unsigned version;
 
-    explicit ConstIterator(LinkedList<Type>::Node *ptr, LinkedList<Type>::Node *sentinel) : ptr(ptr), sentinel(sentinel) 
+    explicit ConstIterator(LinkedList<Type>::Node *ptr, LinkedList<Type>::Node *sentinel, unsigned &srcVersion, unsigned version) : 
+        ptr(ptr), sentinel(sentinel), srcVersion(srcVersion), version(srcVersion)
     {
     }
 
     reference operator*() const
     {
+        if (srcVersion != version)
+            throw std::logic_error("Iterator invalidated");
         if (ptr == sentinel)
             throw std::out_of_range("This iterator does not point to a valid node");
         
@@ -337,6 +353,8 @@ class LinkedList<Type>::ConstIterator
 
     ConstIterator &operator++()
     {
+        if (srcVersion != version)
+            throw std::logic_error("Iterator invalidated");
         if (ptr == sentinel)
             throw std::out_of_range("The next iterator does not exist");
 
@@ -346,13 +364,15 @@ class LinkedList<Type>::ConstIterator
 
     ConstIterator operator++(int)
     {
-        ConstIterator tmp(ptr, sentinel);
+        ConstIterator tmp(ptr, sentinel, srcVersion);
         ++(*this);
         return tmp;
     }
 
     ConstIterator &operator--()
     {
+        if (srcVersion != version)
+            throw std::logic_error("Iterator invalidated");
         if (ptr == sentinel->next)
             throw std::out_of_range("The previous iterator does not exist");
         
@@ -362,14 +382,17 @@ class LinkedList<Type>::ConstIterator
 
     ConstIterator operator--(int)
     {
-        ConstIterator tmp(ptr, sentinel);
+        ConstIterator tmp(ptr, sentinel, srcVersion);
         --(*this);
         return tmp;
     }
 
     ConstIterator operator+(difference_type d) const
     {
-        ConstIterator tmp(ptr, sentinel);
+        if (srcVersion != version)
+            throw std::logic_error("Iterator invalidated");
+    
+        ConstIterator tmp(ptr, sentinel, srcVersion);
         for (auto i = 0; i < d; i++)
             ++tmp;
         return tmp;
@@ -377,7 +400,10 @@ class LinkedList<Type>::ConstIterator
 
     ConstIterator operator-(difference_type d) const
     {
-        ConstIterator tmp(ptr, sentinel);
+        if (srcVersion != version)
+            throw std::logic_error("Iterator invalidated");
+            
+        ConstIterator tmp(ptr, sentinel, srcVersion);
         for (auto i = 0; i < d; i++)
             --tmp;
         return tmp;
@@ -385,6 +411,10 @@ class LinkedList<Type>::ConstIterator
 
     bool operator==(const ConstIterator &other) const
     {
+        if (srcVersion != version)
+            throw std::logic_error("Iterator invalidated");
+        if (other.srcVersion != other.version)
+            throw std::logic_error("Iterator invalidated");
         return this->ptr == other.ptr;
     }
 
@@ -401,7 +431,8 @@ class LinkedList<Type>::Iterator : public LinkedList<Type>::ConstIterator
     using pointer = typename LinkedList::pointer;
     using reference = typename LinkedList::reference;
 
-    explicit Iterator(LinkedList<Type>::Node *ptr, LinkedList<Type>::Node *sentinel) : ConstIterator(ptr, sentinel)
+    explicit Iterator(LinkedList<Type>::Node *ptr, LinkedList<Type>::Node *sentinel, unsigned &srcVersion, unsigned version) : 
+        ConstIterator(ptr, sentinel, version, version)
     {
     }
 
