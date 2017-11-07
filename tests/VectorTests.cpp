@@ -212,6 +212,8 @@ void thenAssignedObjectsCountWas<OperationCountingObject>(std::size_t count)
   BOOST_CHECK_EQUAL(OperationCountingObject::assignedObjectsCount(), count);
 }
 
+// TESTS
+
 BOOST_AUTO_TEST_CASE_TEMPLATE(GivenCollection_WhenCreatedWithDefaultConstructor_ThenItIsEmpty,
                               T,
                               TestedTypes)

@@ -233,6 +233,9 @@ class LinkedList
 
     void erase(const const_iterator &firstIncluded, const const_iterator &lastExcluded)
     {
+        if (isEmpty())
+            throw std::out_of_range("Collection already empty");
+
         Node *ptr = firstIncluded.ptr;
         Node *beg = ptr->prev;
         Node *last = lastExcluded.ptr;
