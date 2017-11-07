@@ -33,13 +33,13 @@ void perfomTest()
   std::cout << "Vector prepend time: " << duration2 << std::endl;
   
   high_resolution_clock::time_point t5 = high_resolution_clock::now();
-  auto tmp1 = list.begin() + (list.getSize() - 1);
+  list.begin() + (list.getSize() - 1);
   high_resolution_clock::time_point t6 = high_resolution_clock::now();
   auto duration3 = duration_cast<microseconds>( t6 - t5 ).count();
   std::cout << "List get last element iterator: " << duration3 << std::endl;
   
   high_resolution_clock::time_point t7 = high_resolution_clock::now();
-  auto tmp2 = vect.begin() + (vect.getSize() - 1);
+  vect.begin() + (vect.getSize() - 1);
   high_resolution_clock::time_point t8 = high_resolution_clock::now();
   auto duration4 = duration_cast<microseconds>( t8 - t7 ).count();
   std::cout << "Vector get last element iterator: " << duration4 << std::endl;
